@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -48,7 +49,7 @@ export class TransactionUtils {
 
             const signedTransaction = account.sign(transferTransaction, factory.generationHash);
 
-            return transactionHttp.announce(signedTransaction).toPromise();
+            return lastValueFrom(transactionHttp.announce(signedTransaction));
         });
     }
 

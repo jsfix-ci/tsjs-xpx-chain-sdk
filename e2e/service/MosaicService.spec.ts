@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import {expect} from 'chai';
 import { map, mergeMap, toArray } from 'rxjs/operators';
 import { AccountHttp } from '../../src/infrastructure/AccountHttp';
@@ -66,11 +67,10 @@ describe('MosaicService', () => {
             new AccountHttp(APIUrl), new MosaicHttp(APIUrl));
 
         return GetNemesisBlockDataPromise().then(data => {
-            return mosaicService.mosaicsAmountViewFromAddress(SeedAccount.address).pipe(
+            return lastValueFrom(mosaicService.mosaicsAmountViewFromAddress(SeedAccount.address).pipe(
                 mergeMap((_) => _),
                 map((mosaic) => console.log('You have', mosaic.relativeAmount(), mosaic.fullName())),
-                toArray(),
-            ).toPromise();
+                toArray()));
         });
 
     });

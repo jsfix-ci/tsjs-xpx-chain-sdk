@@ -1,6 +1,6 @@
 import { SeedAccount, APIUrl, ConfNetworkMosaic, AllTestingAccounts, TestAccount, TestingAccount, ConfTestingNamespaceId, ConfTestingMosaicNonce, ConfTestingMosaicProperties, TestingRecipient, ConfAccountHttp, ConfTransactionHttp, ConfNamespaceHttp, ConfMosaicHttp, Configuration, ConfTestingMosaicId } from "./conf.spec";
 import { Account, PlainMessage, UInt64, MultisigCosignatoryModification, MultisigCosignatoryModificationType, Address, Mosaic, MosaicId, AccountInfo, NamespaceId, RegisterNamespaceTransaction, CosignatureTransaction, AccountRestrictionModification, RestrictionModificationType, RestrictionType, MosaicSupplyType } from "../../src/model/model";
-import { forkJoin } from "rxjs";
+import { lastValueFrom, forkJoin } from "rxjs";
 import { TransactionHttp, Listener, AccountHttp } from "../../src/infrastructure/infrastructure";
 import { Test } from "mocha";
 
@@ -58,7 +58,7 @@ export class ConfUtils {
 
     public static convertToMultisigIfNotConvertedYet(ta: TestAccount) {
         const accountHttp = ConfAccountHttp;
-        return accountHttp.getMultisigAccountInfo(ta.acc.address).toPromise().then(msigInfo => {
+        return lastValueFrom(accountHttp.getMultisigAccountInfo(ta.acc.address)).then(msigInfo => {
             if (msigInfo.cosignatories && msigInfo.cosignatories.length > 0) {
                 console.log(ta.conf.alias + " already is msig");
                 return Promise.resolve();
@@ -76,7 +76,7 @@ export class ConfUtils {
             console.log(ta.conf.alias + " need pubkey");
             return ConfUtils.simpleCreateAndAnnounceWaitForConfirmation(ta.acc.address, 1, ta.acc, '')
                 .then(() => {
-                    return accountHttp.getAccountInfo(ta.acc.address).toPromise();
+                    return lastValueFrom(accountHttp.getAccountInfo(ta.acc.address));
                 });
         } else {
             return Promise.resolve().then(() => {
@@ -93,7 +93,7 @@ export class ConfUtils {
                 console.log(ta.conf.alias + " not enough funds, gonna add " + (ta.conf.seed * 1000000 - (m ? m.amount.compact() : 0)));
                 return ConfUtils.simpleCreateAndAnnounceWaitForConfirmation(ta.acc.address, ta.conf.seed * 1000000 - (m ? m.amount.compact() : 0))
                     .then(() => {
-                        return accountHttp.getAccountInfo(ta.acc.address).toPromise();
+                        return lastValueFrom(accountHttp.getAccountInfo(ta.acc.address));
                     });
             } else {
                 console.log(ta.conf.alias + " good to go.");
@@ -117,9 +117,9 @@ export class ConfUtils {
                         accountHttp.getAccountInfo(ta.acc.address).subscribe(accInfo => {
                             if (ta.conf.alias === 'testing') {
                                 //initiate 20 more txs.
-                                forkJoin(
+                                lastValueFrom(forkJoin(
                                     new Array(20).fill(0).map(n => ConfUtils.simpleCreateAndAnnounceWaitForConfirmation(ta.acc.address, 1, ta.acc))
-                                ).toPromise().then(() => {
+                                )).then(() => {
                                     resolve(accInfo);
                                 }).catch(() => {
                                     resolve(accInfo); //continue anyway

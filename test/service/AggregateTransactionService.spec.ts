@@ -16,7 +16,7 @@
 
 import { expect } from 'chai';
 import { ChronoUnit } from '@js-joda/core';
-import {of as observableOf} from 'rxjs';
+import { lastValueFrom, of as observableOf } from 'rxjs';
 import {deepEqual, instance, mock, when} from 'ts-mockito';
 import { AccountHttp } from '../../src/infrastructure/AccountHttp';
 import { Account } from '../../src/model/account/Account';
@@ -127,7 +127,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account2], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.true;
         });
     });
@@ -156,7 +156,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.false;
         });
     });
@@ -185,7 +185,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.false;
         });
     });
@@ -223,7 +223,7 @@ describe('AggregateTransactionService', () => {
             NetworkType.MIJIN_TEST,
             []);
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.false;
         });
     });
@@ -261,7 +261,7 @@ describe('AggregateTransactionService', () => {
             NetworkType.MIJIN_TEST,
             []);
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4, account2], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.true;
         });
     });
@@ -290,7 +290,7 @@ describe('AggregateTransactionService', () => {
             NetworkType.MIJIN_TEST,
             []);
         const signedTransaction = aggregateTransaction.signWith(account2, generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.true;
         });
     });
@@ -317,7 +317,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signWith(account1, generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.false;
         });
     });
@@ -345,7 +345,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signWith(account4, generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.true;
         });
     });
@@ -388,7 +388,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.true;
         });
     });
@@ -430,7 +430,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.false;
         });
     });
@@ -456,7 +456,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account2, [account3], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.true;
         });
     });
@@ -482,7 +482,7 @@ describe('AggregateTransactionService', () => {
             []);
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account2, [], generationHash);
-        aggregateTransactionService.isComplete(signedTransaction).toPromise().then((isComplete) => {
+        lastValueFrom(aggregateTransactionService.isComplete(signedTransaction)).then((isComplete) => {
             expect(isComplete).to.be.false;
         });
     });

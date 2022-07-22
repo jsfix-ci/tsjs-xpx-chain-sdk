@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 const conf = require("config");
 
 import { MosaicId, NamespaceId, TransactionType, RegisterNamespaceTransaction, MosaicDefinitionTransaction,
@@ -190,7 +191,7 @@ class NemesisBlockInfo {
     static async getInstance(): Promise<BlockInfo> {
         if (!NemesisBlockInfo.instance) {
             const blockHttp = new BlockHttp(APIUrl);
-            NemesisBlockInfo.instance = await blockHttp.getBlockByHeight(1).toPromise();
+            NemesisBlockInfo.instance = await lastValueFrom(blockHttp.getBlockByHeight(1));
         }
         return NemesisBlockInfo.instance;
     }
@@ -202,8 +203,8 @@ class Configuration {
     static async getTransactionBuilderFactory(): Promise<TransactionBuilderFactory> {
         if (!Configuration.factory) {
             const newFactory = new TransactionBuilderFactory();
-            newFactory.networkType = ConfNetworkType || await NemesisBlockInfo.getInstance().then(blockInfo => blockInfo.networkType);
-            newFactory.generationHash = ConfGenerationHash || await NemesisBlockInfo.getInstance().then(blockInfo => blockInfo.generationHash);
+            newFactory.networkType = ConfNetworkType || (await NemesisBlockInfo.getInstance().then(blockInfo => blockInfo.networkType));
+            newFactory.generationHash = ConfGenerationHash || (await NemesisBlockInfo.getInstance().then(blockInfo => blockInfo.generationHash));
             Configuration.factory = newFactory;
         }
         return Configuration.factory;
@@ -215,7 +216,7 @@ const GetNemesisBlockDataPromise = () => {
     return NemesisBlockInfo.getInstance().then((nemesisBlockInfo) => {
         let transactionQueryParams = new TransactionQueryParams();
         transactionQueryParams.pageSize = 100;
-        return blockHttp.getBlockTransactions(1, transactionQueryParams).toPromise()
+        return lastValueFrom(blockHttp.getBlockTransactions(1, transactionQueryParams))
         .then(txs => {
             const regNamespaceTxs = txs.filter(tx => tx.type === TransactionType.REGISTER_NAMESPACE) as RegisterNamespaceTransaction[];
             const currencyNamespace = regNamespaceTxs.find(tx => tx.namespaceName === "xpx");
